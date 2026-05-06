@@ -1,0 +1,2 @@
+id_hex,instance_name,resource_type,display_en,display_uk,file,status,blocked_by,notes
+0x0000000000000000,trait_bgp_inner_compass_restless_dreamer,Trait,Restless Dreamer,Неспокійний Мрійник,BGP_InnerCompass_Traits.package,planned,research,replace dummy ID before implementation
