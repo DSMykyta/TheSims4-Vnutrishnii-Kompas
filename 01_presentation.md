@@ -45,6 +45,9 @@
 5. Жодних DLC-залежностей.
    У першій стабільній версії не використовувати pack tags, pack icons, pack interactions, pack careers, active professions, clubs, calendar events, lot types або предмети з DLC.
 
+6. Жодних сторонніх runtime-модів.
+   Цільовий install profile: чиста The Sims 4 Base Game + `BaseGamePlus: Inner Compass`. Для гравця не потрібні WW, MCCC, Basemental, RPO, XML Injector, Lot 51 Core Library або інші gameplay/script mods. Якщо скрипт стане потрібним, це має бути наш власний мінімальний `.ts4script`, що постачається як частина цього DLC-моду.
+
 ## Нові traits
 
 | Trait | Роль у gameplay | Сильна сторона | Ціна |
@@ -260,6 +263,7 @@ Buff/moodlet tone лишається ближчим до Maxis: `Спалах І
 - Для роботи робляться копії в `research/annotated/`.
 - Після extraction зберігаються SHA-256 hashes extracted XML, щоб після EA patch diff показував реальні зміни.
 - Research закривається тільки після відповідей на 5 stop-rule питань з implementation plan.
+- Research і compatibility перевірки ведуться від чистої базової гри. Інші моди можуть перевірятися пізніше як smoke-test, але вони не визначають дизайн і не стають залежностями.
 
 ## Anti-spam і комфорт гравця
 
@@ -311,6 +315,7 @@ Codex може прискорити XML/STBL рутину, але не скас�
 
 - Active careers.
 - DLC hooks.
+- Залежність від сторонніх runtime-модів або бібліотек.
 - Нові objects, CAS, animations, worlds.
 - Кастомні wants/fears як головна система.
 - Custom aspiration categories.
@@ -328,8 +333,6 @@ Codex може прискорити XML/STBL рутину, але не скас�
 - EA Neighborhood Stories first phase and two base-game aspirations: https://www.ea.com/games/the-sims/news/update-11-30-2021
 - EA Help, career types: https://help.ea.com/en/articles/the-sims/the-sims-4/the-sims-4-careers/
 - EA Help, base game install/free-to-play: https://help.ea.com/articles/the-sims/the-sims-4/base-game-install/
-- Lot 51 Core Library: https://lot51.cc/mods/core-library
-- Lot 51 Core Library source/docs: https://github.com/lot51/core-library
 - Lot 51 Simdex/Tuning tools: https://lot51.cc/simdex
 - Sims 4 Studio: https://sims4studio.com/
 - XML Extractor tutorial/reference: https://thesims4moddersreference.org/tutorials/xml-extractor/

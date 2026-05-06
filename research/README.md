@@ -4,20 +4,38 @@ This folder holds the research material for `BaseGamePlus: Inner Compass`.
 
 ## Rules
 
+- Research baseline is clean The Sims 4 Base Game with no gameplay mods.
 - `extracted/` is raw EA tuning reference. Treat it as read-only.
 - Do not annotate or hand-edit files inside `extracted/`.
 - Copy selected files into `annotated/` before adding comments.
 - Keep `snapshot_manifest.csv` updated after every full extraction.
 - Keep IDs and strings in CSV before creating final package resources.
+- Do not design against WW, MCCC, Basemental, RPO or any other third-party mod. Those are late smoke-test targets only.
 
 ## Workflow
 
 1. Run a full base-game `Extract All` tuning snapshot.
 2. Put raw XML under `research/extracted/`.
-3. Generate SHA-256 rows in `snapshot_manifest.csv`.
+3. Generate SHA-256 rows in `snapshot_manifest.csv` with `scripts/generate_snapshot_manifest.ps1`.
 4. Copy target examples into `research/annotated/`.
 5. Fill `patterns/*.md` with concrete findings.
 6. Stop research only after the five stop-rule questions are answered.
+
+## Snapshot Manifest
+
+After `Extract All`, run from the workspace root:
+
+```powershell
+.\research\scripts\generate_snapshot_manifest.ps1 -GameVersion "PC 1.123.85.1020"
+```
+
+The manifest hashes extracted XML files, not game `.package` files.
+
+Expected CSV columns:
+
+```csv
+relative_path,sha256,file_size,extracted_date,game_version
+```
 
 ## Stop-Rule Questions
 

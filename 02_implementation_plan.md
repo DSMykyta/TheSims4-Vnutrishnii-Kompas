@@ -5,14 +5,17 @@
 ## 0. Жорсткі правила проєкту
 
 - Target: The Sims 4 Base Game only.
+- Target player install: clean Base Game + this mod only.
+- No third-party runtime dependencies for MVP or first stable release.
 - Current reference date: 2026-05-06.
 - Latest released patch considered: PC `1.123.85.1020`, Mac `1.123.85.1220`, Console `2.32` from 2026-04-28.
 - Upcoming 2026-05-12 update is not part of baseline until released and tested.
 - Baseline version was verified from the official EA 2026-04-28 patch notes on 2026-05-06. If work continues after 2026-05-12, update this baseline before editing tuning.
 - No DLC tuning, no DLC tags, no DLC icons, no DLC objects, no DLC interactions.
 - Prefer additive tuning and injectors. Avoid overriding EA resources unless there is no other clean route.
+- If injection requires a script, prefer our own minimal project script over depending on XML Injector or a third-party runtime library.
 - Keep stable IDs forever after public release.
-- Every feature must be tested in a clean save with only this mod and required libraries.
+- Every feature must be tested in a clean save with only this mod installed.
 
 ## 1. Toolchain
 
@@ -26,15 +29,15 @@ Required:
 
 Recommended:
 
-- Lot 51 Core Library as optional dependency for injections and event-style utilities.
 - WinMerge or similar diff tool for comparing extracted tuning between patches.
 - Mod Constructor only for prototyping traits/careers quickly, not as the final source of truth.
+- Lot 51 Simdex / Core Library documentation may be used as reference material, but Core Library is not a runtime dependency for this mod.
 
 Decision:
 
 - MVP can be tuning-only.
 - Python `.ts4script` is allowed only if hidden-state evaluation becomes too fragile in pure tuning.
-- If Python is used, use the Python version expected by the current TS4 script environment and compile in the standard TS4-compatible way. Verify this again before implementation because TS4 Python constraints can change.
+- If Python is used, it is our own minimal `.ts4script`, shipped with this mod. Use the Python version expected by the current TS4 script environment and compile in the standard TS4-compatible way. Verify this again before implementation because TS4 Python constraints can change.
 
 Engineering decision for MVP:
 
@@ -70,7 +73,11 @@ Optional script:
 
 - `BGP_InnerCompass.ts4script`
 
-Do not ship Lot 51 Core Library inside this mod. If used, document it as a dependency and link users to the official download.
+Runtime dependency policy:
+
+- MVP and first stable release must not require Lot 51 Core Library, XML Injector, MCCC, WickedWhims, Basemental, RPO or any other third-party mod.
+- If a third-party injector would make a feature easier, first look for a base-game tuning-only route or implement a minimal internal script.
+- Do not ship other creators' libraries inside this mod.
 
 ## 3. Naming and ID policy
 
@@ -119,7 +126,7 @@ Potentially needed:
 - Pie menu category tuning if interactions need their own clean menu.
 - Notification tuning for rabbit-hole outcomes.
 - Autonomy modifiers for trait behavior.
-- Injector snippets if using Lot 51 Core Library.
+- Internal injection script only if pure tuning cannot attach interactions safely.
 
 ## 5. Research pass before editing
 
@@ -141,6 +148,15 @@ Target annotated subset:
 - Commodities: `commodity_Motive_Hunger`, connected `buff_Motive_Hunger_*`, and at least one `commodity_Hidden_*` with threshold-style buff behavior if present.
 - Phone/computer preferences from the 2026-03-17 patch.
 - Any base interaction showing cooldown/test gating relevant to anti-spam.
+
+Research order:
+
+1. Buff example.
+2. `commodity_Motive_Hunger` and connected hunger buffs.
+3. `trait_Creative`.
+4. `superInteraction_Sim_GoJogging` or current equivalent.
+5. `aspiration_Author_BestsellingAuthor` plus objectives.
+6. `career_Adult_Writer` plus selected levels and branches.
 
 Output of this phase:
 
@@ -213,6 +229,8 @@ Goal: one complete loop from CAS to gameplay to aspiration progress.
 - Cooldown: 8 sim hours.
 - Autonomy: disabled in MVP.
 - Start animation: reuse an existing base-game short interaction animation. Candidate families to inspect in extracted tuning: phone browse, thoughtful idle, walk-away/travel setup, or generic self interaction. No custom animation.
+- Injection scope: self-interaction only for MVP, attached through the custom trait's own affordances where possible.
+- Phone/computer integration is post-MVP. It requires either a tuning-only attachment pattern that does not override base objects, or a minimal internal script injection.
 - Outcomes:
   - 35% `Спалах Ідеї`
   - 25% `Нова Перспектива`
@@ -459,12 +477,16 @@ Self interactions:
 
 Phone interactions:
 
+Post-MVP only. Do not block MVP on phone integration.
+
 - `Скласти план майбутнього`
 - `Попросити пораду`
 - `Допомогти на гарячій лінії`
 - `Взяти день без телефону`
 
 Computer interactions:
+
+Post-MVP only. Do not block MVP on computer integration.
 
 - `Створити карту цілей`
 - `Дослідити новий напрям`
@@ -577,11 +599,18 @@ Reward traits:
 
 ## 12. Compatibility plan
 
+Primary compatibility target:
+
+- Clean The Sims 4 Base Game.
+- No external gameplay mods.
+- No external script libraries.
+- Our own `.package` files, plus our own `.ts4script` only if the MVP proves it is necessary.
+
 Preferred:
 
 - Additive custom resources.
-- Lot 51 Core Library TuningInjector for interactions and injections.
 - No direct edits to EA careers, traits, aspirations unless a tiny compatibility patch is explicitly needed.
+- Tuning-only interaction attachment if stable; otherwise minimal internal script injection.
 
 Avoid:
 
@@ -609,8 +638,8 @@ Mitigation:
 - Publish a compatibility note.
 - Provide no-overrides version if possible.
 - Do not intentionally integrate adult mods in the base release. Compatibility means "does not break alongside them", not feature dependency.
-- Smoke-test with the user's real mod stack only after clean base-game testing passes.
-- Mykyta must provide the actual active script/tuning mod list before compatibility QA. CC-only clothing/furniture is not required for this matrix.
+- Smoke-test with popular mods only after clean base-game testing passes.
+- Mykyta's real mod stack is useful for late smoke testing, but it does not define MVP scope.
 
 Compatibility matrix for release notes:
 
@@ -658,12 +687,12 @@ Example:
 Clean install:
 
 - Only base game enabled.
-- Only this mod and required dependency installed.
+- Only this mod installed.
 - Script Mods enabled only if script exists.
 
 Test saves:
 
-- Clean MVP save: one Sim with `Неспокійний Мрійник`, no other mods except required libraries.
+- Clean MVP save: one Sim with `Неспокійний Мрійник`, no other mods.
 - Mid-state save: 4-6 Sims, one played week, several hobbies/skills/careers active, used to detect autonomy spam and buff stacking.
 
 CAS:
@@ -733,6 +762,7 @@ Rollback:
 
 Popular mod smoke test, after clean QA only:
 
+- Optional. This is not part of MVP acceptance.
 - MCCC installed.
 - WickedWhims or WonderfulWhims installed, if present in the user's normal setup.
 - Lumpinou RPO installed, if present in the user's normal setup.
@@ -881,13 +911,17 @@ Practical release strategy:
 
 ## 18. Closed technical decisions
 
+- Target product: vanilla Base Game DLC-style mod, no third-party runtime dependencies.
 - Extraction scope: full `Extract All` raw snapshot plus annotated subset.
 - Raw extracted XML is read-only by convention.
+- Snapshot manifest hashes extracted XML, not game `.package` files.
 - Custom aspiration categories are out of scope; use existing categories.
 - Aspiration mapping: `Знайти Себе` -> Knowledge, `Жити Усвідомлено` -> Knowledge, `Бути Опорою` -> Family, `Запалити Іскру` -> Creativity, `Збудувати Шлях` -> Fortune.
 - Custom wants/fears are out of MVP and first stable release.
 - MVP rabbit-hole autonomy is disabled.
 - `Restlessness` is the only MVP hidden state.
+- Lot 51 Core Library and XML Injector are not MVP/first-stable dependencies.
+- MVP uses self-interactions only. Phone/computer integration moves to post-MVP unless extracted tuning shows a clean no-override path.
 
 ## 19. Open technical questions
 
@@ -898,6 +932,7 @@ Practical release strategy:
 - Which base-game animation/affordance is the cleanest launch behavior for `Піти шукати натхнення`.
 - Whether the career concepts feel distinct enough after prototyping, or should be postponed.
 - Whether milestone 3+ shared state logic needs Python after MVP proves tuning-only commodities.
+- Whether interaction injection can stay tuning-only without third-party libraries; if not, scope a minimal internal script.
 
 ## 20. Source links
 
@@ -910,8 +945,6 @@ Practical release strategy:
 - EA Neighborhood Stories first phase and aspirations: https://www.ea.com/games/the-sims/news/update-11-30-2021
 - EA Help career types: https://help.ea.com/en/articles/the-sims/the-sims-4/the-sims-4-careers/
 - EA Help base game free-to-play/install: https://help.ea.com/articles/the-sims/the-sims-4/base-game-install/
-- Lot 51 Core Library: https://lot51.cc/mods/core-library
-- Lot 51 Core Library source: https://github.com/lot51/core-library
 - Lot 51 Simdex: https://lot51.cc/simdex
 - Sims 4 Studio: https://sims4studio.com/
 - XML Extractor reference: https://thesims4moddersreference.org/tutorials/xml-extractor/
